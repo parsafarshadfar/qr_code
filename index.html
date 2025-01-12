@@ -193,9 +193,10 @@
     #qrOutput canvas {
       border: 1px solid #ccc;
       display: block;
-      transform: scale(0.9); /* Scale down to 90% */
-      transform-origin: center; /* Scale from the center */
       margin: 0;
+      max-width: 95%; /* Limit width to 90% of the container */
+      height: auto; /* Maintain aspect ratio */
+      margin: 0 auto; /* Center the QR code horizontally */
     }
 
     /* Containers for each content type (hidden by default) */
