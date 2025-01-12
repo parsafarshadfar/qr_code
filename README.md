@@ -3,6 +3,13 @@
 
 An all-in-one webpage for generating custom QR codes. Supports **vCard**, **Link/Text**, and **WiFi** inputs with customizable options, detailed vCard fields, and a mobile-friendly interface.
 
+---
+
+## 🚀 Demo  
+Check out the live demo: [https://parsafarshadfar.github.io/qr_code/](https://parsafarshadfar.github.io/qr_code/)
+
+---
+
 ## Features
 
 1. **Three Content Types**
