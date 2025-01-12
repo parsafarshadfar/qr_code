@@ -193,6 +193,8 @@
     #qrOutput canvas {
       border: 1px solid #ccc;
       display: block;
+      transform: scale(0.9); /* Scale down to 90% */
+      transform-origin: center; /* Scale from the center */
       margin: 0;
     }
 
@@ -734,6 +736,8 @@
       link.download = "qr_code.png";
       link.click();
     });
+
+
   </script>
 </body>
 </html>
