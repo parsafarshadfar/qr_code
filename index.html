@@ -183,21 +183,24 @@
     }
 
     /* OUTPUT */
+    /* QR Output - Responsive */
     #qrOutput {
       display: flex;
       justify-content: center;
       align-items: center;
       margin-top: 1rem;
       animation: fadeIn 0.5s ease;
+      max-width: 95%; /* Ensures it doesn't exceed the container width */
     }
+
     #qrOutput canvas {
       border: 1px solid #ccc;
-      display: block;
-      margin: 0;
-      max-width: 95%; /* Limit width to 95% of the container */
+      width: 95%; /* Make the canvas responsive */
       height: auto; /* Maintain aspect ratio */
-      margin: 0 auto; /* Center the QR code horizontally */
+      max-width: 95%; /* Ensure it respects the container's width */
+      margin: 0;
     }
+
 
     /* Containers for each content type (hidden by default) */
     #vcardInputs,
@@ -706,7 +709,7 @@
       }
 
       // Generate QR
-      const size = 350;
+      const size = 340;
       const colorDark = qrColorInput.value;
       const colorLight = qrBgColorInput.value;
       const ecl = qrECLSelect.value;
