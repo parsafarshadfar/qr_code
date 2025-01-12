@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced QR Code Generator</title>
+  <!-- Favicon (small home icon) -->
+  <link
+    rel="icon"
+    href="https://cdn-icons-png.flaticon.com/512/1287/1287507.png"
+    type="image/png"
+  />
+
+  <!-- QRCode.js for generating QR codes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+
+    /* RESET */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: #f0f0f5; /* Light background */
+      color: #333;
+      width: 100%;
+      overflow-x: hidden;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      animation: fadeInDown 0.6s ease-in-out;
+    }
+
+    /* WRAPPER */
+    .content-wrapper {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      animation: fadeInUp 0.8s ease-in-out;
+    }
+
+    /* FORM CONTAINER */
+    .generator-container {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      width: 100%;
+    }
+
+    /* INPUT LINES & GROUPS */
+    .input-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 160px;
+      flex: 1;
+      position: relative;
+    }
+    .input-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: #444;
+    }
+    .info-icon {
+      margin-left: 0.25rem;
+      background: #777;
+      color: #fff;
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      text-align: center;
+      font-size: 10px;
+      line-height: 14px;
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+    }
+    .tooltip {
+      display: none;
+      position: absolute;
+      top: -5px;
+      left: 20px;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      max-width: 230px;
+      line-height: 1.2;
+      z-index: 100;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .info-icon:hover .tooltip {
+      display: block;
+    }
+
+    .input-group input[type="text"],
+    .input-group select,
+    .input-group input[type="tel"],
+    .input-group input[type="email"],
+    .input-group input[type="password"] {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      outline: none;
+      background: #fafafa;
+      transition: border-color 0.2s;
+    }
+    .input-group input[type="text"]:focus,
+    .input-group select:focus,
+    .input-group input[type="tel"]:focus,
+    .input-group input[type="email"]:focus,
+    .input-group input[type="password"]:focus {
+      border-color: #888;
+    }
+
+    .input-group input[type="color"] {
+      width: 100%;
+      height: 34px;
+      border: none;
+      outline: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: outline-color 0.2s;
+    }
+    .input-group input[type="color"]:focus {
+      outline-color: #888;
+    }
+
+    /* Buttons (on separate line) */
+    .btn-line {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center; /* center the buttons */
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: 4px;
+      background: #337ab7;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.2s ease;
+      animation: fadeIn 0.5s ease;
+    }
+    button:hover {
+      background: #286090;
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* OUTPUT */
+    #qrOutput {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 1rem;
+      animation: fadeIn 0.5s ease;
+    }
+    #qrOutput canvas {
+      border: 1px solid #ccc;
+      display: block;
+      margin: 0;
+    }
+
+    /* Containers for each content type (hidden by default) */
+    #vcardInputs,
+    #textLinkGroup,
+    #wifiInputs {
+      display: none;
+      flex-wrap: wrap;
+      gap: 1rem;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.4s ease;
+    }
+
+    /* Additional classes for fade in/out */
+    .fade-in {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #666;
+      text-align: center;
+    }
+
+    /* RESPONSIVE */
+    @media screen and (max-width: 700px) {
+      .input-line {
+        flex-direction: column;
+      }
+      .btn-line {
+        flex-direction: column;
+      }
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    /* Lighter placeholder text */
+    ::placeholder {
+      color: #ddd; 
+      opacity: 1;
+    }
+    :-ms-input-placeholder {
+      color: #ddd;
+    }
+    ::-ms-input-placeholder {
+      color: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Advanced QR Code Generator</h1>
+
+  <div class="content-wrapper">
+    <div class="generator-container">
+
+      <!-- Content type (3 options: vCard, textLink, wifi) -->
+      <div class="input-line">
+        <div class="input-group" style="flex: 1;">
+          <label for="contentType">
+            Content Type
+            <span class="info-icon">i
+              <span class="tooltip">
+                "vCard" = contact card,
+                "Link/Text" = typical text or URLs,
+                "WiFi" = store WiFi network data.
+              </span>
+            </span>
+          </label>
+          <select id="contentType">
+            <option value="vcard" selected>vCard</option>
+            <option value="textLink">Link/Text</option>
+            <option value="wifi">WiFi</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- vCard inputs (default) -->
+      <div id="vcardInputs" class="input-line">
+        <!-- Full Name -->
+        <div class="input-group">
+          <label for="vName">Full Name</label>
+          <input type="text" id="vName" placeholder="Parsa Farshadfar">
+        </div>
+        <!-- Telephone -->
+        <div class="input-group">
+          <label for="vTel">Telephone</label>
+          <input type="tel" id="vTel" placeholder="123-456-7890">
+        </div>
+        <!-- Mobile -->
+        <div class="input-group">
+          <label for="vCell">Mobile</label>
+          <input type="tel" id="vCell" placeholder="123-456-7890">
+        </div>
+        <!-- Fax -->
+        <div class="input-group">
+          <label for="vFax">Fax</label>
+          <input type="tel" id="vFax" placeholder="123-456-7890">
+        </div>
+        <!-- Email -->
+        <div class="input-group">
+          <label for="vEmail">Email</label>
+          <input type="email" id="vEmail" placeholder="parsafarshadfar@live.com">
+        </div>
+        <!-- Company -->
+        <div class="input-group">
+          <label for="vCompany">Company</label>
+          <input type="text" id="vCompany" placeholder="Example Inc.">
+        </div>
+        <!-- Job Title -->
+        <div class="input-group">
+          <label for="vTitle">Job Title</label>
+          <input type="text" id="vTitle" placeholder="ML Engineer">
+        </div>
+
+        <!-- More Specific Address for vCard: Street, City, State, ZIP, Country -->
+        <div class="input-group">
+          <label for="vStreet">Street</label>
+          <input type="text" id="vStreet" placeholder="123 Example St">
+        </div>
+        <div class="input-group">
+          <label for="vCity">City</label>
+          <input type="text" id="vCity" placeholder="Toronto">
+        </div>
+        <div class="input-group">
+          <label for="vState">State/Province</label>
+          <input type="text" id="vState" placeholder="ON">
+        </div>
+        <div class="input-group">
+          <label for="vPostal">ZIP/Postal Code</label>
+          <input type="text" id="vPostal" placeholder="A1A 1A1">
+        </div>
+        <div class="input-group">
+          <label for="vCountry">Country</label>
+          <input type="text" id="vCountry" placeholder="Canada">
+        </div>
+
+        <!-- Website -->
+        <div class="input-group">
+          <label for="vURL">Website</label>
+          <input type="text" id="vURL" placeholder="https://parsafarshadfar.github.io">
+        </div>
+      </div>
+
+      <!-- Link/Text group -->
+      <div id="textLinkGroup" class="input-line">
+        <div class="input-group" style="flex: 1;">
+          <label for="contentInput">Content (URL / Email / Raw Text)</label>
+          <input type="text" id="contentInput" placeholder="e.g. https://parsafarshadfar.github.io or parsafarshadfar@live.com or just plain text">
+        </div>
+      </div>
+
+      <!-- WiFi inputs -->
+      <div id="wifiInputs" class="input-line">
+        <div class="input-group">
+          <label for="wifiSsid">SSID (Network Name)</label>
+          <input type="text" id="wifiSsid" placeholder="MyWiFi">
+        </div>
+        <div class="input-group">
+          <label for="wifiEncryption">Encryption</label>
+          <select id="wifiEncryption">
+            <option value="WPA" selected>WPA/WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="wifiPassword">Password</label>
+          <input type="password" id="wifiPassword" placeholder="mypassword">
+        </div>
+        <!-- Hidden checkbox -->
+        <div class="input-group">
+          <label for="wifiHidden">Hidden Network?</label>
+          <input type="checkbox" id="wifiHidden">
+        </div>
+      </div>
+
+      <!-- Second line: colors + ECL -->
+      <div class="input-line">
+        <!-- QR color -->
+        <div class="input-group">
+          <label for="qrColor">QR Color</label>
+          <input type="color" id="qrColor" value="#000000">
+        </div>
+
+        <!-- BG color -->
+        <div class="input-group">
+          <label for="qrBgColor">Background</label>
+          <input type="color" id="qrBgColor" value="#ffffff">
+        </div>
+
+        <!-- ECL -->
+        <div class="input-group">
+          <label for="qrECL">
+            Error Correction Level
+            <span class="info-icon">i
+              <span class="tooltip">
+                Higher ECL means the QR code can still be read even if partially damaged.
+                High (30%) is the most robust.
+              </span>
+            </span>
+          </label>
+          <select id="qrECL">
+            <option value="L" selected>Low (7%)</option>
+            <option value="M">Medium (15%)</option>
+            <option value="Q">Quartile (25%)</option>
+            <option value="H">High (30%)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Buttons on a new line (centered) -->
+      <div class="btn-line">
+        <button id="generateBtn">Generate</button>
+        <button id="downloadBtn" disabled>Download</button>
+      </div>
+
+      <!-- QR Output -->
+      <div id="qrOutput"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 - Advanced QR Code Generator</p>
+  </footer>
+
+  <script>
+    /*
+     * ADVANCED FEATURES:
+     * 1. Rate limiting (5 in 30s)
+     * 2. Suspicious content detection
+     * 3. Basic sanitization (<, >)
+     * 4. 3 content types: vCard, Link/Text, WiFi
+     * 5. More specific address fields for vCard
+     * 6. Animations & mobile-friendly layout
+    */
+
+    // Basic sanitization
+    function sanitizeInput(str) {
+      return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Suspicious detection
+    function isSuspiciousInput(str) {
+      const lower = str.toLowerCase();
+      return lower.includes("javascript:") || lower.includes("data:text/html");
+    }
+
+    // Rate limiting
+    const LIMIT_COUNT = 2;
+    const LIMIT_WINDOW_MS = 30000; // 30 seconds
+    function canGenerate() {
+      const now = Date.now();
+      let usageData = JSON.parse(localStorage.getItem("qrUsageData") || "[]");
+      usageData = usageData.filter(ts => now - ts < LIMIT_WINDOW_MS);
+      if (usageData.length >= LIMIT_COUNT) {
+        return false;
+      }
+      usageData.push(now);
+      localStorage.setItem("qrUsageData", JSON.stringify(usageData));
+      return true;
+    }
+
+    // DOM elements
+    const contentTypeSelect = document.getElementById("contentType");
+    const vcardInputsContainer = document.getElementById("vcardInputs");
+    const textLinkGroup = document.getElementById("textLinkGroup");
+    const wifiInputsContainer = document.getElementById("wifiInputs");
+
+    // vCard inputs
+    const vName = document.getElementById("vName");
+    const vTel = document.getElementById("vTel");
+    const vCell = document.getElementById("vCell");
+    const vFax = document.getElementById("vFax");
+    const vEmail = document.getElementById("vEmail");
+    const vCompany = document.getElementById("vCompany");
+    const vTitle = document.getElementById("vTitle");
+
+    // New address fields
+    const vStreet = document.getElementById("vStreet");
+    const vCity = document.getElementById("vCity");
+    const vState = document.getElementById("vState");
+    const vPostal = document.getElementById("vPostal");
+    const vCountry = document.getElementById("vCountry");
+
+    const vURL = document.getElementById("vURL");
+
+    // Link/Text input
+    const contentInput = document.getElementById("contentInput");
+
+    // WiFi inputs
+    const wifiSsid = document.getElementById("wifiSsid");
+    const wifiEncryption = document.getElementById("wifiEncryption");
+    const wifiPassword = document.getElementById("wifiPassword");
+    const wifiHidden = document.getElementById("wifiHidden");
+
+    // QR code style
+    const qrColorInput = document.getElementById("qrColor");
+    const qrBgColorInput = document.getElementById("qrBgColor");
+    const qrECLSelect = document.getElementById("qrECL");
+
+    // Buttons & output
+    const generateBtn = document.getElementById("generateBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const qrOutput = document.getElementById("qrOutput");
+
+    // On load: "vCard" is selected => show vcardInputs, hide others
+    showContainer("vcard");
+
+    // Switch content type
+    contentTypeSelect.addEventListener("change", () => {
+      showContainer(contentTypeSelect.value);
+    });
+
+    function showContainer(type) {
+      // Remove fade-in from all
+      vcardInputsContainer.classList.remove("fade-in");
+      textLinkGroup.classList.remove("fade-in");
+      wifiInputsContainer.classList.remove("fade-in");
+
+      // Hide all
+      vcardInputsContainer.style.display = "none";
+      textLinkGroup.style.display = "none";
+      wifiInputsContainer.style.display = "none";
+
+      // Show the chosen container with fade
+      if (type === "vcard") {
+        vcardInputsContainer.style.display = "flex";
+        setTimeout(() => {
+          vcardInputsContainer.classList.add("fade-in");
+        }, 50);
+      } else if (type === "textLink") {
+        textLinkGroup.style.display = "flex";
+        setTimeout(() => {
+          textLinkGroup.classList.add("fade-in");
+        }, 50);
+      } else if (type === "wifi") {
+        wifiInputsContainer.style.display = "flex";
+        setTimeout(() => {
+          wifiInputsContainer.classList.add("fade-in");
+        }, 50);
+      }
+    }
+
+    // Build vCard string
+    function buildVCard() {
+      const lines = [
+        "BEGIN:VCARD",
+        "VERSION:3.0"
+      ];
+
+      // Full Name
+      if (vName.value.trim()) {
+        lines.push(`FN:${sanitizeInput(vName.value.trim())}`);
+      }
+      // Telephone
+      if (vTel.value.trim()) {
+        lines.push(`TEL;TYPE=WORK,VOICE:${sanitizeInput(vTel.value.trim())}`);
+      }
+      // Mobile
+      if (vCell.value.trim()) {
+        lines.push(`TEL;TYPE=CELL,VOICE:${sanitizeInput(vCell.value.trim())}`);
+      }
+      // Fax
+      if (vFax.value.trim()) {
+        lines.push(`TEL;TYPE=FAX:${sanitizeInput(vFax.value.trim())}`);
+      }
+      // Email
+      if (vEmail.value.trim()) {
+        lines.push(`EMAIL;TYPE=INTERNET:${sanitizeInput(vEmail.value.trim())}`);
+      }
+      // Company
+      if (vCompany.value.trim()) {
+        lines.push(`ORG:${sanitizeInput(vCompany.value.trim())}`);
+      }
+      // Title
+      if (vTitle.value.trim()) {
+        lines.push(`TITLE:${sanitizeInput(vTitle.value.trim())}`);
+      }
+
+      // Address (vCard standard "ADR" format is ADR;TYPE=WORK:;;street;city;region;postal code;country)
+      // We'll skip the second field after the colon (the "PO Box") and use the rest
+      const streetVal = vStreet.value.trim();
+      const cityVal = vCity.value.trim();
+      const stateVal = vState.value.trim();
+      const postalVal = vPostal.value.trim();
+      const countryVal = vCountry.value.trim();
+      if (streetVal || cityVal || stateVal || postalVal || countryVal) {
+        const safeStreet = sanitizeInput(streetVal);
+        const safeCity = sanitizeInput(cityVal);
+        const safeState = sanitizeInput(stateVal);
+        const safePostal = sanitizeInput(postalVal);
+        const safeCountry = sanitizeInput(countryVal);
+        lines.push(`ADR;TYPE=WORK:;;${safeStreet};${safeCity};${safeState};${safePostal};${safeCountry}`);
+      }
+
+      // Website
+      if (vURL.value.trim()) {
+        lines.push(`URL:${sanitizeInput(vURL.value.trim())}`);
+      }
+
+      lines.push("END:VCARD");
+      return lines.join("\n");
+    }
+
+    // Build WiFi string
+    // Format: WIFI:T:<encryption>;S:<ssid>;P:<pass>;H:<hidden>;;
+    function buildWiFi() {
+      const ssid = wifiSsid.value.trim();
+      const enc = wifiEncryption.value;  // WPA, WEP, None
+      const pass = wifiPassword.value.trim();
+      const hidden = wifiHidden.checked ? "true" : "false";
+
+      if (!ssid) {
+        alert("SSID (Network Name) is required for WiFi QR.");
+        return null;
+      }
+
+      // sanitize
+      const safeSsid = sanitizeInput(ssid);
+      const safePass = sanitizeInput(pass);
+
+      let wifiStr = `WIFI:T:${enc === "None" ? "nopass" : enc};S:${safeSsid};`;
+      // If encryption is not None, add the password
+      if (enc !== "None") {
+        wifiStr += `P:${safePass};`;
+      } else {
+        wifiStr += "P:;";
+      }
+      wifiStr += `H:${hidden};;`;
+      return wifiStr;
+    }
+
+    // GENERATE
+    generateBtn.addEventListener("click", () => {
+      // Rate limit
+      if (!canGenerate()) {
+        alert("Too many requests. Please wait and try again.");
+        return;
+      }
+
+      // Clear old
+      qrOutput.innerHTML = "";
+
+      let finalContent = "";
+      if (contentTypeSelect.value === "vcard") {
+        finalContent = buildVCard();
+        // Minimal check: need at least name or phone or email
+        if (
+          !finalContent.includes("FN:") &&
+          !finalContent.includes("EMAIL") &&
+          !finalContent.includes("TEL")
+        ) {
+          alert("Your vCard has no name, phone, or email. Provide at least one for it to be useful.");
+          return;
+        }
+      } else if (contentTypeSelect.value === "textLink") {
+        const raw = contentInput.value.trim();
+        if (!raw) {
+          alert("Please enter valid content.");
+          return;
+        }
+        if (isSuspiciousInput(raw)) {
+          alert("Suspicious content detected. Remove 'javascript:' or similar patterns.");
+          return;
+        }
+        finalContent = sanitizeInput(raw);
+      } else if (contentTypeSelect.value === "wifi") {
+        const wifiData = buildWiFi();
+        if (!wifiData) {
+          // If null returned, means something missing (e.g. no SSID)
+          return;
+        }
+        finalContent = wifiData;
+      }
+
+      // Generate QR
+      const size = 400;
+      const colorDark = qrColorInput.value;
+      const colorLight = qrBgColorInput.value;
+      const ecl = qrECLSelect.value;
+
+      new QRCode(qrOutput, {
+        text: finalContent,
+        width: size,
+        height: size,
+        colorDark: colorDark,
+        colorLight: colorLight,
+        correctLevel: QRCode.CorrectLevel[ecl]
+      });
+
+      // Enable download
+      downloadBtn.disabled = false;
+    });
+
+    // DOWNLOAD
+    downloadBtn.addEventListener("click", () => {
+      const canvas = qrOutput.querySelector("canvas");
+      if (!canvas) {
+        alert("No QR code to download. Generate one first.");
+        return;
+      }
+      const dataURL = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "qr_code.png";
+      link.click();
+    });
+  </script>
+</body>
+</html>
