@@ -9,7 +9,7 @@ An all-in-one webpage for generating custom QR codes. Supports **vCard**, **Link
 Check out the live demo: [https://parsafarshadfar.github.io/qr_code/](https://parsafarshadfar.github.io/qr_code/)
 
 
-
+ 
 
 ![qr_code_example](/QR_code_demo.png)
 
