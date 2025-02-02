@@ -19,7 +19,7 @@ Check out the live demo: [https://parsafarshadfar.github.io/qr_code/](https://pa
 1. **📇 Three Content Types**
    - **vCard**: Input name, phone(s), fax, company, job title, detailed address (street, city, state, postal code, country), and website all together in one QR code.
    - **🔗 Link/Text**: Create QR codes for Web URLs, Email addresses or short text.
-   - **📶 WiFi**: Generate a QR code to store network SSID, encryption type, and password.
+   - **📶 WiFi**: Generate a QR code to store network SSID, encryption type, and password. 
 
 2. **🎨 Customizable QR Code**
    - Set **QR foreground color** and **background color**.
