@@ -23,7 +23,7 @@ Check out the live demo: [https://parsafarshadfar.github.io/qr_code/](https://pa
 
 2. **🎨 Customizable QR Code**
    - Set **QR foreground color** and **background color**.
-   - Choose **Error Correction Level** (Low, Medium, Q, H).
+   - Choose **Error Correction Level** (Low, Medium, Quartile, High).
 
 3. **💾 Downloadable QR Codes**
    - Save generated QR codes as PNG files with a single click.
