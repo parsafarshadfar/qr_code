@@ -1,5 +1,5 @@
  
-# Advanced QR Code Generator
+# Advanced QR Code Generator 
 
 An all-in-one webpage for generating custom QR codes. Supports **vCard**, **Link/Text**, and **WiFi** inputs with customizable options, detailed vCard fields, and a mobile-friendly interface.
  
