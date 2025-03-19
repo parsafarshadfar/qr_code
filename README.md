@@ -31,5 +31,5 @@ Check out the live demo: [https://parsafarshadfar.github.io/qr_code/](https://pa
 ---
 
 ## 🤝 Contributing
-
+ 
 Contributions are welcome! If you have ideas for new features or improvements, feel free to open an issue or submit a pull request.
